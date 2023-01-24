@@ -9,7 +9,7 @@ const Form = () => {
     const schedule = React.useContext(ScheduleContext) as Periods;
     return (
         <div>
-            {schedule.map(cell => <ScheduleCell name={cell.name} start={cell.start} end={cell.end}/>)}
+            {schedule.map(cell => <ScheduleCell {...cell}/>)}
         </div>
     )
 }
