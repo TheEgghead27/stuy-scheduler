@@ -4,17 +4,21 @@ import moment from "moment/moment";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from "@mui/x-date-pickers";
-import { IconButton, TextField } from "@mui/material";
+import { Alert, Button, IconButton, Snackbar, TextField } from "@mui/material";
 import { AddCircle, Clear } from "@mui/icons-material";
+import AndyFin from "../context/AndyFin";
 
 class ScheduleForm extends Component<any, any> {
     constructor(props: any) {
         super(props);
-        this.state = {schedule: [{
+        this.state = {
+            schedule: [{
                 name: "Period 1",
                 start: moment("1970-01-01 08:00"),
                 end: moment("1970-01-01 08:41")
-            }] as Periods};
+            }] as Periods,
+            toastOpen: false
+        };
     }
 
     appendPeriod(name: string, start: moment.Moment, end: moment.Moment) {
@@ -51,6 +55,10 @@ class ScheduleForm extends Component<any, any> {
         this.setState({
             schedule
         })
+    }
+
+    generate(schedule: Periods) {
+        return AndyFin(schedule);
     }
 
     ScheduleCell: FC<IndexArg> = (props) => {
@@ -96,6 +104,7 @@ class ScheduleForm extends Component<any, any> {
     };
 
     render() {
+        const toggleClose = () => this.setState({toastOpen: !this.state.toastOpen});
         return (
             <LocalizationProvider dateAdapter={AdapterMoment}>
                 {Object.keys(this.state.schedule).map((cell: string) =>
@@ -105,7 +114,7 @@ class ScheduleForm extends Component<any, any> {
                     aria-label="add a period"
                     onClick={
                         () => this.appendPeriod(
-                            "",
+                            "Period X",
                             this.state.schedule[this.state.schedule.length - 1].start.clone().add(46, 'm'),
                             this.state.schedule[this.state.schedule.length - 1].end.clone().add(46, 'm')
                         )
@@ -113,6 +122,19 @@ class ScheduleForm extends Component<any, any> {
                 >
                     <AddCircle />
                 </IconButton>
+                <Button variant="contained" onClick={async () => {
+                    await navigator.clipboard.writeText(
+                        JSON.stringify(this.generate(this.state.schedule), null, 2)
+                    );
+                    toggleClose();
+                }}>
+                    Generate
+                </Button>
+                <Snackbar open={this.state.toastOpen} autoHideDuration={5000} onClose={toggleClose}>
+                    <Alert onClose={toggleClose} severity="success">
+                        Copied to clipboard!
+                    </Alert>
+                </Snackbar>
             </LocalizationProvider>
         )
     }
