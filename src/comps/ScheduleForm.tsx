@@ -1,14 +1,13 @@
-import React, {FC} from 'react';
-import {IndexArg, Period, Periods, ScheduleContext} from "../context/ScheduleContext";
-// import ScheduleCell from "./ScheduleCell";
+import { Component, FC, useState } from 'react';
+import { IndexArg, Periods } from "../context/ScheduleContext";
 import moment from "moment/moment";
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
-import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
-import {IconButton, TextField} from "@mui/material";
-import {AddCircle, Clear} from "@mui/icons-material";
-import {TimePicker} from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from "@mui/x-date-pickers";
+import { IconButton, TextField } from "@mui/material";
+import { AddCircle, Clear } from "@mui/icons-material";
 
-class ScheduleForme extends React.Component<any, any> {
+class ScheduleForm extends Component<any, any> {
     constructor(props: any) {
         super(props);
         this.state = {schedule: [{
@@ -24,7 +23,6 @@ class ScheduleForme extends React.Component<any, any> {
                 schedule: [...this.state.schedule, {name, start, end}]
             }
         )
-        console.log(this.state);
     }
     editPeriod(index: number, name: string, start: moment.Moment, end: moment.Moment) {
         const schedule = this.state.schedule;
@@ -57,7 +55,7 @@ class ScheduleForme extends React.Component<any, any> {
 
     ScheduleCell: FC<IndexArg> = (props) => {
         const period = this.state.schedule[props.index];
-        const [endHelper, setEndHelper] = React.useState<string>("");
+        const [endHelper, setEndHelper] = useState<string>("");
         return (
             <div>
                 <TextField
@@ -119,38 +117,5 @@ class ScheduleForme extends React.Component<any, any> {
         )
     }
 }
-
-/*const Form = () => {
-    const schedule = React.useContext(ScheduleContext) as Periods;
-    return (
-        <div>
-            {schedule.map(cell => <ScheduleCell {...cell}/>)}
-        </div>
-    )
-}*/
-
-const ScheduleForm = () => {
-    return (<ScheduleForme />)
-/*    const [formData, setFormData] = React.useState([
-        {
-            name: "Period 1",
-            start: moment("1970-01-01 08:00"),
-            end: moment("1970-01-01 08:41")
-        },
-        {
-            name: "Period 2",
-            start: moment("1970-01-01 08:45"),
-            end: moment("1970-01-01 09:21")
-        }
-    ]);
-    console.log(formData);
-    return (<div>
-        <LocalizationProvider dateAdapter={AdapterMoment}>
-            <ScheduleContext.Provider value={formData}>
-                <Form />
-            </ScheduleContext.Provider>
-        </LocalizationProvider>
-    </div>);*/
-};
 
 export default ScheduleForm;
