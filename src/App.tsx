@@ -10,9 +10,9 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <h1>Stuy Website Schedule Generator</h1>
       </header>
-      <body>
+      <main>
         <ScheduleForm />
-      </body>
+      </main>
     </div>
   );
 }

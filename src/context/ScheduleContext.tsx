@@ -9,10 +9,14 @@ export interface Period {
 
 export interface Periods extends Array<Period> { }
 
+export interface IndexArg {
+    index: number
+}
+
 export const ScheduleContext = createContext<Periods>([
     {
-        end: moment("1970-01-01 08:41"),
         name: "Period 1",
+        end: moment("1970-01-01 08:41"),
         start: moment("1970-01-01 08:00")
     },
 ]);

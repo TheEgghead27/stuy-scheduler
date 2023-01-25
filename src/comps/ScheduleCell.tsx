@@ -6,13 +6,18 @@ import {TextField} from "@mui/material";
 const ScheduleCell: FC<Period> = (period) => {
     return (
         <div>
-            <div>{period.name}</div>
-            <div>{period.start.format()}</div>
-            <div>{period.end.format()}</div>
+            <TextField label="Period" variant="filled" value={period.name}/>
             <TimePicker
+                label="Start"
                 onChange={change => {return 0}}
                 value={period.start}
-                renderInput={params => <TextField {...params} />}
+                renderInput={params => <TextField variant="filled" {...params} />}
+            />
+            <TimePicker
+                label="End"
+                onChange={change => {return 0}}
+                value={period.end}
+                renderInput={params => <TextField variant="filled" {...params} />}
             />
         </div>
 
