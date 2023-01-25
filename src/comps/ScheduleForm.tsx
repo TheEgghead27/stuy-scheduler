@@ -4,14 +4,27 @@ import moment from "moment/moment";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from "@mui/x-date-pickers";
-import { Alert, Button, IconButton, Snackbar, TextField } from "@mui/material";
+import {
+    Alert,
+    Button,
+    FormControl,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Snackbar,
+    TextField
+} from "@mui/material";
 import { AddCircle, Clear } from "@mui/icons-material";
 import AndyFin from "../context/AndyFin";
+import Today from "../context/Today";
 
 class ScheduleForm extends Component<any, any> {
     constructor(props: any) {
         super(props);
         this.state = {
+            format: "AndyFin",
+            name: "Regular",  // only used in AndyFin
             schedule: [{
                 name: "Period 1",
                 start: moment("1970-01-01 08:00"),
@@ -57,8 +70,13 @@ class ScheduleForm extends Component<any, any> {
         })
     }
 
-    generate(schedule: Periods) {
-        return AndyFin(schedule);
+    generate(name: string, schedule: Periods, format: "AndyFin"|"Today") : string {
+        switch (format) {
+            case "AndyFin":
+                return  AndyFin(name, schedule);
+            case "Today":
+                return  Today(schedule);
+        }
     }
 
     ScheduleCell: FC<IndexArg> = (props) => {
@@ -107,6 +125,27 @@ class ScheduleForm extends Component<any, any> {
         const toggleClose = () => this.setState({toastOpen: !this.state.toastOpen});
         return (
             <LocalizationProvider dateAdapter={AdapterMoment}>
+                <FormControl>
+                    <InputLabel id="schedule-format-label">Schedule Format</InputLabel>
+                    <Select
+                        labelId="schedule-format-label"
+                        id="schedule-format"
+                        value={this.state.format}
+                        label="Schedule Format"
+                        onChange={event => this.setState({format: event.target.value})}
+                    >
+                        <MenuItem value={"AndyFin"}>Andy-Fin Sophomore Caucus</MenuItem>
+                        <MenuItem value={"Today"}>today.stuysu.org</MenuItem>
+                    </Select>
+                </FormControl>
+                {this.state.format === "AndyFin" ?
+                    <TextField
+                        label="Schedule Name"
+                        variant="outlined"
+                        onChange={event =>
+                            this.setState({name: event.target.value})
+                        }
+                        value={this.state.name}/> : <></>}
                 {Object.keys(this.state.schedule).map((cell: string) =>
                     <this.ScheduleCell key={cell} index={parseInt(cell)}/>
                 )}
@@ -124,7 +163,7 @@ class ScheduleForm extends Component<any, any> {
                 </IconButton>
                 <Button variant="contained" onClick={async () => {
                     await navigator.clipboard.writeText(
-                        JSON.stringify(this.generate(this.state.schedule), null, 2)
+                        this.generate(this.state.name, this.state.schedule, this.state.format)
                     );
                     toggleClose();
                 }}>
