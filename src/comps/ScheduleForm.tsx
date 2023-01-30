@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from "@mui/x-date-pickers";
 import {
     Alert,
+    Box,
     Button,
     FormControl,
     IconButton,
@@ -13,7 +14,8 @@ import {
     MenuItem,
     Select,
     Snackbar,
-    TextField
+    TextField,
+    Tooltip
 } from "@mui/material";
 import { AddCircle, Clear } from "@mui/icons-material";
 import AndyFin from "../context/AndyFin";
@@ -30,6 +32,7 @@ class ScheduleForm extends Component<any, any> {
                 start: moment("1970-01-01 08:00"),
                 end: moment("1970-01-01 08:41")
             }] as Periods,
+            output: "",
             toastOpen: false
         };
     }
@@ -83,7 +86,12 @@ class ScheduleForm extends Component<any, any> {
         const period = this.state.schedule[props.index];
         const [endHelper, setEndHelper] = useState<string>("");
         return (
-            <div>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginLeft: '2.5rem'
+            }}>
                 <TextField
                     label="Period"
                     variant="filled"
@@ -116,7 +124,7 @@ class ScheduleForm extends Component<any, any> {
                 >
                     <Clear />
                 </IconButton>
-            </div>
+            </Box>
 
         )
     };
@@ -138,35 +146,41 @@ class ScheduleForm extends Component<any, any> {
                         <MenuItem value={"Today"}>today.stuysu.org</MenuItem>
                     </Select>
                 </FormControl>
-                {this.state.format === "AndyFin" ?
-                    <TextField
-                        label="Schedule Name"
-                        variant="outlined"
-                        onChange={event =>
-                            this.setState({name: event.target.value})
-                        }
-                        value={this.state.name}/> : <></>}
+                <TextField
+                    label="Schedule Name"
+                    variant="outlined"
+                    disabled={this.state.format !== "AndyFin"}
+                    onChange={event =>
+                        this.setState({name: event.target.value})
+                    }
+                    value={this.state.name}/>
                 {Object.keys(this.state.schedule).map((cell: string) =>
                     <this.ScheduleCell key={cell} index={parseInt(cell)}/>
                 )}
-                <IconButton
-                    aria-label="add a period"
-                    onClick={
-                        () => this.appendPeriod(
-                            "Period X",
-                            this.state.schedule[this.state.schedule.length - 1].start.clone().add(46, 'm'),
-                            this.state.schedule[this.state.schedule.length - 1].end.clone().add(46, 'm')
-                        )
-                    }
-                >
-                    <AddCircle />
-                </IconButton>
-                <Button variant="contained" onClick={async () => {
-                    await navigator.clipboard.writeText(
-                        this.generate(this.state.name, this.state.schedule, this.state.format)
-                    );
-                    toggleClose();
-                }}>
+                <Tooltip title={"Add a period"}>
+                    <IconButton
+                        sx={{marginBottom: '1rem'}}
+                        size="large"
+                        aria-label="add a period"
+                        onClick={
+                            () => this.appendPeriod(
+                                "Period X",
+                                this.state.schedule[this.state.schedule.length - 1].start.clone().add(46, 'm'),
+                                this.state.schedule[this.state.schedule.length - 1].end.clone().add(46, 'm')
+                            )
+                        }
+                    >
+                        <AddCircle fontSize="inherit" />
+                    </IconButton>
+                </Tooltip>
+                <Button variant="contained"
+                        sx={{marginBottom: '2rem'}}
+                        onClick={async () => {
+                            const output = this.generate(this.state.name, this.state.schedule, this.state.format);
+                            this.setState({ output });
+                            await navigator.clipboard.writeText(output);
+                            toggleClose();
+                        }}>
                     Generate
                 </Button>
                 <Snackbar open={this.state.toastOpen} autoHideDuration={5000} onClose={toggleClose}>
@@ -174,6 +188,8 @@ class ScheduleForm extends Component<any, any> {
                         Copied to clipboard!
                     </Alert>
                 </Snackbar>
+                <code>{this.state.output}</code>
+
             </LocalizationProvider>
         )
     }

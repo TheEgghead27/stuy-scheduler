@@ -12,6 +12,17 @@ import {
 const theme = createTheme({
         palette: {
             mode: "dark"
+        },
+        components: {
+            MuiFormControl: {
+                styleOverrides: {
+                    root: {
+                        margin: '1rem 1vw',
+                        width: 'min(30vw, 20rem)'
+                    }
+
+                }
+            }
         }
     }
 );
